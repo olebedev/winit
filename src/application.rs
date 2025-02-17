@@ -231,6 +231,18 @@ pub trait ApplicationHandler<T: 'static = ()> {
         let _ = event_loop;
         let _ = url;
     }
+
+    /// Emitted when the user attempts to re-launch the application.
+    ///
+    /// ## Platform-specific
+    ///
+    /// - **macOS**: This event is emitted when the user clicks the dock icon of a running application
+    ///   or attempts to re-launch it. The boolean parameter indicates whether the application
+    ///   currently has any visible windows.
+    /// - **Other platforms**: Unsupported.
+    fn application_reopen(&mut self, event_loop: &ActiveEventLoop, has_visible_windows: bool) {
+        let _ = (event_loop, has_visible_windows);
+    }
 }
 
 impl<A: ?Sized + ApplicationHandler<T>, T: 'static> ApplicationHandler<T> for &mut A {
@@ -288,6 +300,11 @@ impl<A: ?Sized + ApplicationHandler<T>, T: 'static> ApplicationHandler<T> for &m
     fn memory_warning(&mut self, event_loop: &ActiveEventLoop) {
         (**self).memory_warning(event_loop);
     }
+
+    #[inline]
+    fn application_reopen(&mut self, event_loop: &ActiveEventLoop, has_visible_windows: bool) {
+        (**self).application_reopen(event_loop, has_visible_windows);
+    }
 }
 
 impl<A: ?Sized + ApplicationHandler<T>, T: 'static> ApplicationHandler<T> for Box<A> {
@@ -344,5 +361,10 @@ impl<A: ?Sized + ApplicationHandler<T>, T: 'static> ApplicationHandler<T> for Bo
     #[inline]
     fn memory_warning(&mut self, event_loop: &ActiveEventLoop) {
         (**self).memory_warning(event_loop);
+    }
+
+    #[inline]
+    fn application_reopen(&mut self, event_loop: &ActiveEventLoop, has_visible_windows: bool) {
+        (**self).application_reopen(event_loop, has_visible_windows);
     }
 }

@@ -118,6 +118,15 @@ pub enum PlatformSpecific {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum MacOS {
     ReceivedUrl(String),
+    /// Emitted when the user attempts to re-launch the application.
+    ///
+    /// ## Platform-specific
+    ///
+    /// - **macOS**: This event is emitted when the user clicks the dock icon of a running application
+    ///   or attempts to re-launch it. The boolean parameter indicates whether the application
+    ///   currently has any visible windows.
+    /// - **Other platforms**: Unsupported.
+    ApplicationReopen(bool),
 }
 
 impl<T> Event<T> {

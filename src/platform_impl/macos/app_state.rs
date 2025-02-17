@@ -104,6 +104,11 @@ declare_class!(
             }
         }
 
+        #[method(applicationShouldHandleReopen:hasVisibleWindows:)]
+        fn app_should_handle_reopen(&self, sender: &NSApplication, has_visible_windows: bool) -> bool {
+            self.should_handle_reopen(sender, has_visible_windows)
+        }
+
         #[method(applicationWillTerminate:)]
         fn app_will_terminate(&self, notification: &NSNotification) {
             self.will_terminate(notification)
@@ -199,6 +204,14 @@ impl ApplicationDelegate {
             let app = NSApplication::sharedApplication(mtm);
             stop_app_immediately(&app);
         }
+    }
+
+    fn should_handle_reopen(&self, _sender: &NSApplication, has_visible_windows: bool) -> bool {
+        trace_scope!("applicationShouldHandleReopen:hasVisibleWindows:");
+        self.maybe_queue_event(Event::PlatformSpecific(PlatformSpecific::MacOS(
+            MacOS::ApplicationReopen(has_visible_windows),
+        )));
+        true
     }
 
     fn will_terminate(&self, _notification: &NSNotification) {
