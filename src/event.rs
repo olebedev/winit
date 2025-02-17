@@ -103,6 +103,16 @@ pub enum Event<T: 'static> {
     ///
     /// [`ApplicationHandler::memory_warning`]: crate::application::ApplicationHandler::memory_warning
     MemoryWarning,
+
+    /// Emitted when the user attempts to re-launch the application.
+    ///
+    /// ## Platform-specific
+    ///
+    /// - **macOS**: This event is emitted when the user clicks the dock icon of a running application
+    ///   or attempts to re-launch it. The boolean parameter indicates whether the application
+    ///   currently has any visible windows.
+    /// - **Other platforms**: Unsupported.
+    ApplicationReopen(bool),
 }
 
 impl<T> Event<T> {
@@ -119,6 +129,7 @@ impl<T> Event<T> {
             Suspended => Ok(Suspended),
             Resumed => Ok(Resumed),
             MemoryWarning => Ok(MemoryWarning),
+            ApplicationReopen(has_visible_windows) => Ok(ApplicationReopen(has_visible_windows)),
         }
     }
 }
